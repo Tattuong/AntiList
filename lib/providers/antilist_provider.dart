@@ -135,148 +135,22 @@ class AntiListProvider extends ChangeNotifier {
     _logs = logRows?.map(TriggerEntry.fromJson).toList() ?? [];
     _logs.sort((a, b) => b.at.compareTo(a.at));
 
-    await _seedScreenshot();
+    await _purgeScreenshotSeed();
 
     _ready = true;
     notifyListeners();
   }
 
-  /// Demo data for store screenshots. Remove after capture.
-  static const seedForScreenshots = true;
-
-  Future<void> _seedScreenshot() async {
-    if (!seedForScreenshots) return;
-    _onboardingComplete = true;
-    await StorageService.instance.saveBool(_onboardKey, true);
-
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-
-    _holds = [
-      for (var i = 0; i < 7; i++)
-        DayHold(
-          date: _dateKey(today.subtract(Duration(days: i))),
-          heldIds: switch (i % 3) {
-            0 => {'doom', 'shop', 'caffeine'},
-            1 => {'doom', 'shop'},
-            _ => {'doom', 'caffeine'},
-          },
-        ),
-    ];
-    await _saveHolds();
-
-    _logs = [
-      TriggerEntry(
-        id: 's1',
-        habitId: 'doom',
-        at: today.subtract(const Duration(hours: 2, minutes: 10)),
-        situation: 'In bed 10:30 PM',
-        urge: 8,
-        replacement: 'Read 10 pages',
-        replacementMinutes: 12,
-        outcome: 'Urge passed',
-        rescued: true,
-      ),
-      TriggerEntry(
-        id: 's2',
-        habitId: 'shop',
-        at: today.subtract(const Duration(hours: 5, minutes: 15)),
-        situation: 'Bored at 1:45 PM',
-        urge: 7,
-        replacement: 'Walk outside',
-        replacementMinutes: 14,
-        outcome: 'Felt better',
-      ),
-      TriggerEntry(
-        id: 's3',
-        habitId: 'caffeine',
-        at: today.subtract(const Duration(days: 1, hours: 6)),
-        situation: 'After 4 PM',
-        urge: 9,
-        replacement: 'Herbal tea',
-        replacementMinutes: 8,
-        outcome: 'Urge passed',
-        rescued: true,
-      ),
-      TriggerEntry(
-        id: 's4',
-        habitId: 'doom',
-        at: today.subtract(const Duration(days: 1, hours: 14)),
-        situation: 'Waiting in line',
-        urge: 6,
-        replacement: 'Stretch 3 minutes',
-        replacementMinutes: 5,
-        outcome: 'Felt better',
-      ),
-      TriggerEntry(
-        id: 's5',
-        habitId: 'shop',
-        at: today.subtract(const Duration(days: 2, hours: 4)),
-        situation: 'Sale popup',
-        urge: 8,
-        replacement: 'Wishlist instead',
-        replacementMinutes: 6,
-        outcome: 'Urge passed',
-      ),
-      TriggerEntry(
-        id: 's6',
-        habitId: 'doom',
-        at: today.subtract(const Duration(days: 2, hours: 11)),
-        situation: 'After a hard meeting',
-        urge: 7,
-        replacement: 'Walk outside',
-        replacementMinutes: 18,
-        outcome: 'Felt better',
-      ),
-      TriggerEntry(
-        id: 's7',
-        habitId: 'caffeine',
-        at: today.subtract(const Duration(days: 3, hours: 7)),
-        situation: 'Study crunch',
-        urge: 9,
-        replacement: '90-second rescue',
-        replacementMinutes: 2,
-        outcome: 'Urge passed',
-        rescued: true,
-      ),
-      TriggerEntry(
-        id: 's8',
-        habitId: 'doom',
-        at: today.subtract(const Duration(days: 4, hours: 3)),
-        situation: 'Bored between tasks',
-        urge: 5,
-        replacement: 'Text a friend',
-        replacementMinutes: 9,
-        outcome: 'Felt better',
-      ),
-      TriggerEntry(
-        id: 's9',
-        habitId: 'shop',
-        at: today.subtract(const Duration(days: 5, hours: 8)),
-        situation: 'Late-night cart',
-        urge: 8,
-        replacement: 'Wait 24 hours',
-        replacementMinutes: 4,
-        outcome: 'Urge passed',
-      ),
-      TriggerEntry(
-        id: 's10',
-        habitId: 'doom',
-        at: today.subtract(const Duration(days: 6, hours: 2)),
-        situation: 'In bed late',
-        urge: 9,
-        replacement: 'Read 10 pages',
-        replacementMinutes: 15,
-        outcome: 'Urge passed',
-        rescued: true,
-      ),
-    ]..sort((a, b) => b.at.compareTo(a.at));
-    await StorageService.instance.saveDataList(_logsKey, _logs.map((e) => e.toJson()).toList());
-
-    _relapseNote = 'Sat evening was tough. Scrolled after a long day. Rescue at 9:12 helped.';
-    await StorageService.instance.saveString(_noteKey, _relapseNote);
-    _weekStart = _mondayOf(now);
-    await StorageService.instance.saveString(_weekStartKey, _weekStart.toIso8601String());
+  Future<void> _purgeScreenshotSeed() async {
+    const key = 'al_cleared_screenshot_seed';
+    if (await StorageService.instance.getBool(key) ?? false) return;
+    _holds = [];
+    _logs = [];
+    _relapseNote = '';
+    await StorageService.instance.saveDataList(_holdsKey, []);
+    await StorageService.instance.saveDataList(_logsKey, []);
+    await StorageService.instance.saveString(_noteKey, '');
+    await StorageService.instance.saveBool(key, true);
   }
 
   Future<void> completeOnboarding() async {

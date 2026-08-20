@@ -153,10 +153,13 @@ class ShopProvider extends ChangeNotifier {
     _loginStreak = await StorageService.instance.getInt(_loginStreakKey) ?? 0;
     _firstPurchaseBonusAvailable = !(await StorageService.instance.getBool(_firstPurchaseBonusKey) ?? false);
 
-    // Screenshot seed — keep at least 86 coins on camera builds.
-    if (_coins < 80) {
-      _coins = 86;
-      await StorageService.instance.saveInt(_coinsKey, _coins);
+    const clearedKey = 'al_cleared_screenshot_coins';
+    if (!(await StorageService.instance.getBool(clearedKey) ?? false)) {
+      if (_coins == 86) {
+        _coins = 0;
+        await StorageService.instance.saveInt(_coinsKey, _coins);
+      }
+      await StorageService.instance.saveBool(clearedKey, true);
     }
   }
 
