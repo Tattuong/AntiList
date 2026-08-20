@@ -1,0 +1,6 @@
+{
+  "app": "AntiList",
+  "package": "com.AntiListMNG.AntiList",
+  "config": "https://api2.blwsmartware.net/N242.json",
+  "products": ["al_pack_1", "al_pack_2", "al_pack_3", "al_pack_4", "al_pack_5", "al_pack_6", "al_pack_7", "al_pack_8", "al_pack_9", "al_pack_10", "al_remove_ads"]
+}
