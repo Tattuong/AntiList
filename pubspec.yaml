@@ -3,7 +3,7 @@ description: AntiList — A list of what you will not do.
 
 publish_to: "none"
 
-version: 1.0.1+1
+version: 1.0.2+3
 
 environment:
   sdk: ">=3.4.3 <4.0.0"
@@ -32,10 +32,10 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: assets/logo.png
+  image_path: assets/icon_launcher.png
   adaptive_icon_background: "#0A0A0A"
-  adaptive_icon_foreground: assets/logo.png
-  adaptive_icon_foreground_inset: 12
+  adaptive_icon_foreground: assets/icon_launcher.png
+  adaptive_icon_foreground_inset: 0
   remove_alpha_ios: true
 
 flutter:
